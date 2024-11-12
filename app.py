@@ -18,12 +18,12 @@ db = SQLAlchemy(app)
 
 scheduler = BackgroundScheduler()
 
-# MySQL configuration (from environment variables)
-app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST', 'localhost')
-app.config['MYSQL_USER'] = os.getenv('MYSQL_USER', 'root')  # Default fallback value
-app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD')  # Will load from .env
-app.config['MYSQL_DB'] = os.getenv('MYSQL_DB', 'telemedicine')
-app.secret_key = os.getenv('SECRET_KEY', 'your_secret_key')  # Set in .env
+# MySQL configuration using environment variables
+app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST')
+app.config['MYSQL_USER'] = os.getenv('MYSQL_USER')
+app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD')
+app.config['MYSQL_DB'] = os.getenv('MYSQL_DB')
+app.secret_key = os.getenv('SECRET_KEY')  # Secret key from .env file
 
 mysql = MySQL(app)
 
@@ -34,11 +34,11 @@ class Appointment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     patient_name = db.Column(db.String(100), nullable=False)
     appointment_date = db.Column(db.DateTime, nullable=False)
-    email = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), nullable=False)  # Assuming you store emails
     specialty = db.Column(db.String(100), nullable=True)
     doctor_id = db.Column(db.Integer, db.ForeignKey('doctors.doctor_id'), nullable=False)
-    payment_status = db.Column(db.String(20), default='Pending')
-    amount = db.Column(db.Float, nullable=False)
+    payment_status = db.Column(db.String(20), default='Pending')  # or use an Enum for more control
+    amount = db.Column(db.Float, nullable=False)  # Amount for the appointment
 
 class Prescription(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -56,10 +56,10 @@ class Doctor(db.Model):
 
 # Function to send notifications
 def send_notification(email, message):
-    smtp_server = os.getenv('SMTP_SERVER')
+    smtp_server = 'smtp.your_email_provider.com'
     smtp_port = 587
-    smtp_username = os.getenv('SMTP_USERNAME')
-    smtp_password = os.getenv('SMTP_PASSWORD')
+    smtp_username = os.getenv('SMTP_USERNAME')  # Use email from .env file
+    smtp_password = os.getenv('SMTP_PASSWORD')  # Use password from .env file
 
     msg = MIMEText(message)
     msg['Subject'] = 'Telemedicine Notification'
@@ -72,7 +72,7 @@ def send_notification(email, message):
         server.send_message(msg)
 
 # Function to check appointments and send reminders
-@scheduler.scheduled_job('interval', minutes=1)
+@scheduler.scheduled_job('interval', minutes=1)  # Adjust as needed
 def check_appointments():
     now = datetime.now()
     upcoming_appointments = Appointment.query.filter(
@@ -84,11 +84,11 @@ def check_appointments():
         send_notification(appointment.email, message)
 
 # Function to check prescriptions and send reminders
-@scheduler.scheduled_job('interval', minutes=1)
+@scheduler.scheduled_job('interval', minutes=1)  # Adjust as needed
 def check_prescriptions():
     now = datetime.now()
     prescriptions = Prescription.query.filter(
-        Prescription.renewal_date <= now + timedelta(days=3)
+        Prescription.renewal_date <= now + timedelta(days=3)  # Change as needed
     ).all()
 
     for prescription in prescriptions:
@@ -206,8 +206,8 @@ def add_doctor():
     if request.method == 'POST':
         first_name = request.form['first_name']
         last_name = request.form['last_name']
-        specialty = request.form['specialty']
-        email = request.form['email']
+        specialty = request.form['specialty']  # Add additional fields as needed
+        email = request.form['email']  # Ensure the doctor has an email field
 
         # Initialize cursor for database operations
         cur = mysql.connection.cursor()
@@ -217,40 +217,17 @@ def add_doctor():
             mysql.connection.commit()
             flash('Doctor registration successful!', 'success')
         except Exception as e:
-            flash(f'Doctor registration failed: {e}', 'danger')
+            flash(f'An error occurred: {str(e)}', 'danger')
         finally:
-            if cur:
-                cur.close()
-        return redirect(url_for('register_doctor'))  # Redirect to the registration page after successful registration
+            cur.close()
 
-    return render_template('register_doctor.html')  # Create this HTML template for doctor registration
+    return render_template('add_doctor.html')
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        first_name = request.form.get('first_name', '')
-        last_name = request.form.get('last_name', '')
-        date_of_birth = request.form.get('date_of_birth', '')
-        gender = request.form.get('gender', '')
-        language = request.form.get('language', '')
-        password = request.form.get('password', '')
-
-        # Initialize cursor outside try-except to avoid UnboundLocalError
-        cur = mysql.connection.cursor()
-        cur.execute('''INSERT INTO patients (first_name, last_name, date_of_birth, gender, language, password)
-                       VALUES (%s, %s, %s, %s, %s, %s)''', (first_name, last_name, date_of_birth, gender, language, generate_password_hash(password)))
-        mysql.connection.commit()
-        flash('Patient registration successful!', 'success')
-        return redirect(url_for('login'))
-    
-    return render_template('register.html')
-
-@app.route('/chat', methods=['GET', 'POST'])
+@app.route('/chat')
 def chat():
-    # Chat logic here (e.g., displaying messages, sending new ones, etc.)
     return render_template('chat.html')
 
+# Run scheduler in the background
 if __name__ == '__main__':
     scheduler.start()
     app.run(debug=True)
-
