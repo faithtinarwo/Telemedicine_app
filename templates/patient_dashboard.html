@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Patient Dashboard</title>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    
+    <div class="content-wrapper"> <!-- Added content wrapper -->
+        <h1>Patient Dashboard</h1>
+
+        {% if not patient_name %}
+            <!-- Form to enter patient name if not already set -->
+            <form method="POST" action="{{ url_for('patient_dashboard') }}">
+                <label for="patient_name">Please enter your name:</label>
+                <input type="text" id="patient_name" name="patient_name" required>
+                <button type="submit">Submit</button>
+            </form>
+        {% else %}
+            <!-- Welcome message with patient's name -->
+            <p>Welcome, {{ patient_name }}! Access your appointments and medical records here.</p>
+            
+            <!-- Link to appointments page -->
+            <a href="{{ url_for('appointment') }}" class="button">View Appointments</a>
+        {% endif %}
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <p>Join thousands of satisfied patients.</p>
+            <p>Rated 4.9/5 by over 10,000 patients.</p>
+            <p>Follow us on:</p>
+            <div class="social-proof">
+                <a href="#"><img src="{{ url_for('static', filename='images/facebook-icon.png') }}" alt="Facebook"></a>
+                <a href="#"><img src="{{ url_for('static', filename='images/twitter-icon.png') }}" alt="Twitter"></a>
+                <a href="#"><img src="{{ url_for('static', filename='images/instagram-icon.png') }}" alt="Instagram"></a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

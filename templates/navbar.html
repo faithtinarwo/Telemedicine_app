@@ -1,0 +1,16 @@
+<!-- navbar.html -->
+<nav>
+    <ul>
+        <li></li>
+            <a href="/">
+                <img src="/static/images/logo.png" alt="Logo" style="height: 50px; width: auto;">
+            </a>
+        </li>
+        <li><a href="{{ url_for('index') }}">Home</a></li>
+        <li><a href="{{ url_for('services') }}">Services</a></li>
+        <li><a href="{{ url_for('patient_dashboard') }}">Patient Dashboard</a></li>
+        <li><a href="{{ url_for('doctors_dashboard') }}">Doctor Dashboard</a></li>
+        <li><a href="{{ url_for('appointment') }}">Appointments</a></li>
+        <li><a href="{{ url_for('chat') }}">Chat</a></li>
+    </ul>
+</nav>

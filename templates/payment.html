@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Payment for Appointment</title>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="content-wrapper">
+        <h2>Payment for Appointment</h2>
+        <p>Appointment with Dr. {{ appointment.doctor_id }} on {{ appointment.appointment_date }}</p>
+        <p>Amount: ${{ appointment.amount }}</p>
+        
+        <form action="{{ url_for('payment', appointment_id=appointment.id) }}" method="POST" id="payment-form">
+            <input type="hidden" name="amount" value="{{ appointment.amount }}">
+            <script src="https://js.stripe.com/v3/"></script>
+            <div id="card-element"><!-- A Stripe Element will be inserted here --></div>
+            <button type="submit">Pay</button>
+        </form>
+    </div>
+
+    <script>
+        // Set up Stripe.js and Elements to use in checkout form
+        const stripe = Stripe('your_stripe_publishable_key'); // Replace with your own publishable key
+        const elements = stripe.elements();
+        const cardElement = elements.create('card');
+        cardElement.mount('#card-element');
+
+        // Handle form submission
+        const form = document.getElementById('payment-form');
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const {paymentMethod, error} = await stripe.createPaymentMethod({
+                type: 'card',
+                card: cardElement,
+            });
+            if (error) {
+                console.error(error);
+                alert('Payment failed. Please try again.');
+            } else {
+                const stripeTokenInput = document.createElement('input');
+                stripeTokenInput.setAttribute('type', 'hidden');
+                stripeTokenInput.setAttribute('name', 'stripeToken');
+                stripeTokenInput.setAttribute('value', paymentMethod.id);
+                form.appendChild(stripeTokenInput);
+                form.submit();
+            }
+        });
+    </script>
+</body>
+</html>

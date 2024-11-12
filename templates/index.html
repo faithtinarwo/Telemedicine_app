@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Welcome to Telemedicine</title>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    
+    <section class="hero">
+        <img src="{{ url_for('static', filename='images/hero-image.jpeg') }}" alt="Hero Image" class="hero-image" />
+        <div class="hero-text">
+            <h1>Welcome to Telemedicine</h1>
+            <p>Your health, your way.</p>
+        </div>
+    </section>
+
+    <div class="content-wrapper"> <!-- Add a content wrapper -->
+        <!-- Any other main content can go here -->
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <p>Join thousands of satisfied patients.</p>
+            <p>Rated 4.9/5 by over 10,000 patients.</p>
+            <p>Follow us on:</p>
+            <div class="social-proof">
+                <a href="#"><img src="{{ url_for('static', filename='images/facebook-icon.png') }}" alt="Facebook"></a>
+                <a href="#"><img src="{{ url_for('static', filename='images/twitter-icon.png') }}" alt="Twitter"></a>
+                <a href="#"><img src="{{ url_for('static', filename='images/instagram-icon.png') }}" alt="Instagram"></a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

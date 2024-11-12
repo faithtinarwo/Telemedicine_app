@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telemedicine Services</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="services-container">
+        <!-- Doctor On Demand Section -->
+        <div class="service">
+            <img src="static/images/doctor2.png" alt="Doctor On Demand Interface">
+            <h3>Doctor On Demand</h3>
+            <p>Doctor On Demand offers services such as urgent care, behavioral health, and chronic condition management, connecting patients with board-certified doctors via video calls.</p>
+        </div>
+        
+        <!-- Teladoc Section -->
+        <div class="service">
+            <img src="static/images/doctor3.png" alt="Teladoc Interface">
+            <h3>Teladoc</h3>
+            <p>Teladoc provides convenient virtual healthcare access, offering primary care, mental health, and dermatology services with on-demand and scheduled consultations.</p>
+        </div>
+        
+        <!-- Amwell Section -->
+        <div class="service">
+            <img src="static/images/doctor1.png" alt="Amwell Interface">
+            <h3>Amwell</h3>
+            <p>Amwell connects patients to providers across specialties, including psychiatry and pediatrics, offering video consultations, prescriptions, and follow-up care.</p>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <p>Join thousands of satisfied patients.</p>
+            <p>Rated 4.9/5 by over 10,000 patients.</p>
+            <p>Follow us on:</p>
+            <div class="social-proof">
+                <a href="#"><img src="{{ url_for('static', filename='images/facebook-icon.png') }}" alt="Facebook"></a>
+                <a href="#"><img src="{{ url_for('static', filename='images/twitter-icon.png') }}" alt="Twitter"></a>
+                <a href="#"><img src="{{ url_for('static', filename='images/instagram-icon.png') }}" alt="Instagram"></a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
