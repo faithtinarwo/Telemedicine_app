@@ -227,6 +227,31 @@ def add_doctor():
 def chat():
     return render_template('chat.html')
 
+@scheduler.scheduled_job('interval', minutes=1)  # Adjust as needed
+def check_prescriptions():
+    with app.app_context():
+        now = datetime.now()
+        prescriptions = Prescription.query.filter(
+            Prescription.renewal_date <= now + timedelta(days=3)
+        ).all()
+
+        for prescription in prescriptions:
+            message = f"Reminder: Your prescription for {prescription.medication_name} is due for renewal."
+            send_notification(prescription.email, message)
+
+@scheduler.scheduled_job('interval', minutes=1)  # Adjust as needed
+def check_appointments():
+    with app.app_context():
+        now = datetime.now()
+        upcoming_appointments = Appointment.query.filter(
+            Appointment.appointment_date <= now + timedelta(days=1)
+        ).all()
+
+        for appointment in upcoming_appointments:
+            message = f"Reminder: You have an appointment scheduled for {appointment.appointment_date}."
+            send_notification(appointment.email, message)
+
+
 # Run scheduler in the background
 if __name__ == '__main__':
     scheduler.start()
