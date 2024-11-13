@@ -74,26 +74,28 @@ def send_notification(email, message):
 # Function to check appointments and send reminders
 @scheduler.scheduled_job('interval', minutes=1)  # Adjust as needed
 def check_appointments():
-    now = datetime.now()
-    upcoming_appointments = Appointment.query.filter(
-        Appointment.appointment_date <= now + timedelta(days=1)
-    ).all()
+    with app.app_context():
+        now = datetime.now()
+        upcoming_appointments = Appointment.query.filter(
+            Appointment.appointment_date <= now + timedelta(days=1)
+        ).all()
 
-    for appointment in upcoming_appointments:
-        message = f"Reminder: You have an appointment scheduled for {appointment.appointment_date}."
-        send_notification(appointment.email, message)
+        for appointment in upcoming_appointments:
+            message = f"Reminder: You have an appointment scheduled for {appointment.appointment_date}."
+            send_notification(appointment.email, message)
 
 # Function to check prescriptions and send reminders
 @scheduler.scheduled_job('interval', minutes=1)  # Adjust as needed
 def check_prescriptions():
-    now = datetime.now()
-    prescriptions = Prescription.query.filter(
-        Prescription.renewal_date <= now + timedelta(days=3)  # Change as needed
-    ).all()
+    with app.app_context():
+        now = datetime.now()
+        prescriptions = Prescription.query.filter(
+            Prescription.renewal_date <= now + timedelta(days=3)  # Change as needed
+        ).all()
 
-    for prescription in prescriptions:
-        message = f"Reminder: Your prescription for {prescription.medication_name} is due for renewal."
-        send_notification(prescription.email, message)
+        for prescription in prescriptions:
+            message = f"Reminder: Your prescription for {prescription.medication_name} is due for renewal."
+            send_notification(prescription.email, message)
 
 # Define the route for the landing page (index)
 @app.route('/')
@@ -194,13 +196,11 @@ def payment():
     # Handle payment processing here
     return render_template('payment.html')
 
-
-@app.route('/appointment', methods=['GET'])
+@app.route('/appointment_list', methods=['GET'])
 def appointment_list():
-    appointment = Appointment.query.all()  # Fetch all appointments
-    return render_template('appointment.html', appointment=appointment)
+    appointments = Appointment.query.all()  # Fetch all appointments
+    return render_template('appointment_list.html', appointments=appointments)
 
-  
 @app.route('/add_doctor', methods=['GET', 'POST'])
 def add_doctor():
     if request.method == 'POST':
@@ -226,31 +226,6 @@ def add_doctor():
 @app.route('/chat')
 def chat():
     return render_template('chat.html')
-
-@scheduler.scheduled_job('interval', minutes=1)  # Adjust as needed
-def check_prescriptions():
-    with app.app_context():
-        now = datetime.now()
-        prescriptions = Prescription.query.filter(
-            Prescription.renewal_date <= now + timedelta(days=3)
-        ).all()
-
-        for prescription in prescriptions:
-            message = f"Reminder: Your prescription for {prescription.medication_name} is due for renewal."
-            send_notification(prescription.email, message)
-
-@scheduler.scheduled_job('interval', minutes=1)  # Adjust as needed
-def check_appointments():
-    with app.app_context():
-        now = datetime.now()
-        upcoming_appointments = Appointment.query.filter(
-            Appointment.appointment_date <= now + timedelta(days=1)
-        ).all()
-
-        for appointment in upcoming_appointments:
-            message = f"Reminder: You have an appointment scheduled for {appointment.appointment_date}."
-            send_notification(appointment.email, message)
-
 
 # Run scheduler in the background
 if __name__ == '__main__':
