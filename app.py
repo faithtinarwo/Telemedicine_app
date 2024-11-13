@@ -106,6 +106,17 @@ def index():
 def services():
     return render_template('services.html')
 
+@app.route('/book_service', methods=['POST'])
+def book_service():
+    # Handle the service booking logic (e.g., saving data to the database)
+    service_id = request.form.get('service_id')  # Assuming you have a service_id field
+    if not service_id:
+        flash("Please select a service to book.", 'error')
+        return redirect(url_for('services'))
+    
+    flash("Service booked successfully!", 'success')
+    return redirect(url_for('services'))
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -165,19 +176,26 @@ def appointment():
             flash('Please select a doctor before booking an appointment.', 'error')
             return redirect(url_for('appointment'))
 
-        # Convert appointment_date to a datetime.date object
+        # Convert appointment_date to a datetime object
         try:
-            appointment_date = datetime.strptime(appointment_date_str, '%Y-%m-%d').date()
+            appointment_date = datetime.strptime(appointment_date_str, '%Y-%m-%d')
         except ValueError:
             flash('Invalid date format. Please select a valid date.', 'error')
             return redirect(url_for('appointment'))
+
+        # Ensure the patient_id is in the session
+        patient_id = session.get('user_id')  # Ensure the patient_id is stored when logged in
+        if not patient_id:
+            flash('You need to log in first to book an appointment.', 'error')
+            return redirect(url_for('login'))
 
         # Proceed with appointment booking logic
         new_appointment = Appointment(
             doctor_id=doctor_id,
             appointment_date=appointment_date,
             specialty=specialty,
-            patient_id=session.get('patient_id')  # Make sure to set the patient_id from the session
+            patient_name=session.get('user_id'),  # If you want to store the patient's name
+            email=session.get('email'),  # If you want to store the patient's email
         )
         db.session.add(new_appointment)
         db.session.commit()
@@ -206,16 +224,20 @@ def add_doctor():
     if request.method == 'POST':
         first_name = request.form['first_name']
         last_name = request.form['last_name']
-        specialty = request.form['specialty']  # Add additional fields as needed
-        email = request.form['email']  # Ensure the doctor has an email field
+        specialty = request.form['specialty']
+        email = request.form['email']
 
-        # Initialize cursor for database operations
+        if not first_name or not last_name or not email:
+            flash('All fields are required.', 'error')
+            return redirect(url_for('add_doctor'))
+
+        # Insert the doctor into the database
         cur = mysql.connection.cursor()
         try:
-            cur.execute("INSERT INTO doctors(first_name, last_name, specialty, email) VALUES(%s, %s, %s, %s)", 
+            cur.execute("INSERT INTO doctors (first_name, last_name, specialty, email) VALUES (%s, %s, %s, %s)", 
                         (first_name, last_name, specialty, email))
             mysql.connection.commit()
-            flash('Doctor registration successful!', 'success')
+            flash('Doctor added successfully!', 'success')
         except Exception as e:
             flash(f'An error occurred: {str(e)}', 'danger')
         finally:
@@ -227,7 +249,21 @@ def add_doctor():
 def chat():
     return render_template('chat.html')
 
-# Run scheduler in the background
+
+@app.route('/doctor_on_demand')
+def doctor_on_demand():
+    return render_template('doctor_on_demand.html')  
+
+@app.route('/teladoc')
+def teladoc():
+    return render_template('teladoc.html')  
+
+@app.route('/amwell')
+def amwell():
+    return render_template('amwell.html')  
+
+
+
 if __name__ == '__main__':
     scheduler.start()
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))

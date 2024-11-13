@@ -10,26 +10,88 @@
     {% include 'navbar.html' %}
     <div class="services-container">
         <!-- Doctor On Demand Section -->
-        <div class="service">
+        <div class="service" onclick="showModal('doctor_on_demand')">
             <img src="static/images/doctor2.png" alt="Doctor On Demand Interface">
             <h3>Doctor On Demand</h3>
-            <p>Doctor On Demand offers services such as urgent care, behavioral health, and chronic condition management, connecting patients with board-certified doctors via video calls.</p>
+            <p>Doctor On Demand offers services such as urgent care, behavioral health, and chronic condition management...</p>
         </div>
         
         <!-- Teladoc Section -->
-        <div class="service">
+        <div class="service" onclick="showModal('teladoc')">
             <img src="static/images/doctor3.png" alt="Teladoc Interface">
             <h3>Teladoc</h3>
-            <p>Teladoc provides convenient virtual healthcare access, offering primary care, mental health, and dermatology services with on-demand and scheduled consultations.</p>
+            <p>Teladoc provides convenient virtual healthcare access...</p>
         </div>
         
         <!-- Amwell Section -->
-        <div class="service">
+        <div class="service" onclick="showModal('amwell')">
             <img src="static/images/doctor1.png" alt="Amwell Interface">
             <h3>Amwell</h3>
-            <p>Amwell connects patients to providers across specialties, including psychiatry and pediatrics, offering video consultations, prescriptions, and follow-up care.</p>
+            <p>Amwell connects patients to providers across specialties...</p>
         </div>
     </div>
+    
+    <!-- Modal Structure -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modal-body"></div>  <!-- Content will be injected here -->
+        </div>
+    </div>
+
+    <script>
+        function showModal(service) {
+            var modalContent = {
+                'doctor_on_demand': `
+                    <h2>Doctor On Demand</h2>
+                    <p>Doctor On Demand offers a wide range of healthcare services, including:</p>
+                    <ul>
+                        <li><strong>Urgent Care:</strong> Access to immediate care for non-emergency health issues.</li>
+                        <li><strong>Behavioral Health:</strong> Counseling and mental health support via secure video calls.</li>
+                        <li><strong>Chronic Condition Management:</strong> Regular monitoring and consultations for chronic illnesses.</li>
+                        <li><strong>Board-Certified Doctors:</strong> Connect with licensed physicians, therapists, and other healthcare providers.</li>
+                    </ul>
+                    <p>With Doctor On Demand, you can receive quality care from the comfort of your home, whether you're looking for an urgent consultation or ongoing treatment.</p>
+                    <img src="static/images/doctor_on_demand.png" alt="Doctor On Demand Service" style="width:100%; height:auto;">
+                `,
+                'teladoc': `
+                    <h2>Teladoc</h2>
+                    <p>Teladoc provides convenient virtual healthcare access with the following services:</p>
+                    <ul>
+                        <li><strong>Primary Care:</strong> General healthcare consultations, including diagnostics and prescriptions.</li>
+                        <li><strong>Mental Health:</strong> Access to licensed therapists, psychologists, and psychiatrists for mental health support.</li>
+                        <li><strong>Dermatology:</strong> Virtual consultations with dermatologists for skin concerns, including prescriptions.</li>
+                        <li><strong>On-Demand Consultations:</strong> Access healthcare services at any time without the need for an appointment.</li>
+                    </ul>
+                    <p>Whether you need a primary care physician or a mental health consultation, Teladoc provides accessible, reliable virtual healthcare 24/7.</p>
+                    <img src="static/images/teladoc.png" alt="Teladoc Service" style="width:100%; height:auto;">
+                `,
+                'amwell': `
+                    <h2>Amwell</h2>
+                    <p>Amwell connects patients with providers across a variety of specialties:</p>
+                    <ul>
+                        <li><strong>Psychiatry:</strong> Mental health care, including therapy and psychiatric evaluations for medication management.</li>
+                        <li><strong>Pediatrics:</strong> Pediatric consultations for children’s health, including non-emergency care and development monitoring.</li>
+                        <li><strong>Specialty Care:</strong> Connect with specialists in areas like cardiology, endocrinology, and dermatology.</li>
+                        <li><strong>Video Consultations:</strong> All consultations are conducted via secure video calls, offering comfort and convenience.</li>
+                    </ul>
+                    <p>With Amwell, you have access to a comprehensive network of healthcare providers, ensuring that your health needs are met efficiently and professionally.</p>
+                    <img src="static/images/amwell.png" alt="Amwell Service" style="width:100%; height:auto;">
+                `
+            };
+
+            // Inject content into the modal
+            document.getElementById('modal-body').innerHTML = modalContent[service];
+
+            // Display the modal
+            document.getElementById('modal').style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = "none";
+        }
+    </script>
+      
 
     <footer>
         <div class="footer-content">
